@@ -101,7 +101,7 @@ class ForwardList {
         }
         std::cout << "[";
         Node* current = m_head;
-        while(current != nullptr) {
+        while (current != nullptr) {
             std::cout << current->data;
 
             if (current->pNext != nullptr) {
@@ -110,5 +110,45 @@ class ForwardList {
             current = current->pNext;
         }
         std::cout << "]" << std::endl;
+    }
+
+    void insert_after(size_t index, const T& value) {
+        if (index >= m_size) {
+            throw std::out_of_range(ERROR_OUT_OF_BOUNDS);
+        }
+        if (index == m_size - 1) {
+            push_back(value);
+            return;
+        }
+        Node* current = m_head;
+        for (size_t i = 0; i < index; ++i) {
+            current = current->pNext;
+        }
+        Node* newNode = new Node(value, current->pNext);
+        current->pNext = newNode;
+
+        m_size++;
+    }
+
+    void insert_before(size_t index, const T& value) {
+        if (index > m_size) {
+            throw std::out_of_range(ERROR_OUT_OF_BOUNDS);
+        }
+        if (index == 0) {
+            push_front(value);
+        }
+        if (index == m_size) {
+            push_back(value);
+            return;
+        }
+        Node* previous = m_head;
+        for (size_t i = 0; i < index - 1; ++i) {
+            previous = previous->pNext;
+        }
+
+        Node* newNode = new Node(value, previous->pNext);
+        previous->pNext = newNode;
+
+        m_size++;
     }
 };
