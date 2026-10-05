@@ -92,4 +92,23 @@ class ForwardList {
         m_tail = newNode;
         m_size++;
     }
+
+    // вывод списка
+    void print() const {
+        if (empty()) {
+            std::cout << "[]" << std::endl;
+            return;
+        }
+        std::cout << "[";
+        Node* current = m_head;
+        while(current != nullptr) {
+            std::cout << current->data;
+
+            if (current->pNext != nullptr) {
+                std::cout << " -> ";
+            }
+            current = current->pNext;
+        }
+        std::cout << "]" << std::endl;
+    }
 };
