@@ -232,7 +232,7 @@ class ForwardList {
         }
 
         Node* previous = m_head;
-        for (size_t i = 0; i <index - 2; ++i) {
+        for (size_t i = 0; i < index - 2; ++i) {
             previous = previous->pNext;
         }
 
@@ -241,5 +241,39 @@ class ForwardList {
 
         delete toDelete;
         m_size--;
+    }
+
+    // Поиск элемента по значению. 
+    // Возвращает индекс первого совпадения, либо `-1`
+    // если элемент не найден
+    size_t find(const T& value) const {
+        Node* current = m_head;
+        size_t index = 0;
+
+        while (current != nullptr) {
+            if (current->data == value) {
+                return index;
+            }
+            current = current->pNext;
+            index++;
+        }
+        return static_cast<size_t>(-1);
+    }
+
+    // удаление элемента по значению
+    bool remove_by_value(const T& value) {
+        size_t index = find(value);
+
+        if (index == static_cast<size_t>(-1)) {
+            return false;
+        }
+
+        if (index == 0) {
+            pop_front();
+        } else {
+            remove_after(index - 1);
+        }
+
+        return true;
     }
 };
