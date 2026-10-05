@@ -62,7 +62,7 @@ class DynamicArray {
         return data[index];
     }
 
-    // чтение элемента по индексу
+    // перегрузка оператор []
     const T& operator[](size_t index) const {
         if (index >= m_size) {
 
