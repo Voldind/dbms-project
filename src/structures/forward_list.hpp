@@ -12,7 +12,7 @@ class ForwardList {
         Node* pNext;  // указатель на следующий узел;
 
         Node(const T& value, Node* nextNode = nullptr)
-            : data(value), pNext(nullptr) {}
+            : data(value), pNext(nextNode) {}
     };
 
     Node* m_head;   // указатель на первый элемент
@@ -25,7 +25,7 @@ class ForwardList {
 
    public:
     // конструктор
-    ForwardList() : head(nullptr), tail(nullptr), m_size(0) {}
+    ForwardList() : m_head(nullptr), m_tail(nullptr), m_size(0) {}
 
     // деструктор
     ~ForwardList() { clear(); }
@@ -44,11 +44,11 @@ class ForwardList {
             delete temp;
         }
         m_tail = nullptr;
-        m_size = o;
+        m_size = 0;
     }
 
     // перегрузка оператор []
-    T& opertaor[](size_t index) {
+    T& operator[](size_t index) {
         if (index >= m_size) {
             throw std::out_of_range(ERROR_OUT_OF_BOUNDS);
         }
@@ -58,7 +58,7 @@ class ForwardList {
         }
         return current->data;
     }
-    const T& opertaor[](size_t index) const {
+    const T& operator[](size_t index) const {
         if (index >= m_size) {
             throw std::out_of_range(ERROR_OUT_OF_BOUNDS);
         }
@@ -67,5 +67,29 @@ class ForwardList {
             current = current->pNext;
         }
         return current->data;
+    }
+
+    // добавление элемента в голову
+    void push_front(const T& value) {
+        Node* newNode = new Node(value, m_head);
+        m_head = newNode;
+
+        if (m_tail == nullptr) {
+            m_tail = m_head;
+        }
+
+        m_size++;
+    }
+
+    // добавление элемента в хвост
+    void push_back(const T& value) {
+        if (empty()) {
+            push_front(value);
+            return;
+        }
+        Node* newNode = new Node(value);
+        m_tail->pNext = newNode;
+        m_tail = newNode;
+        m_size++;
     }
 };
