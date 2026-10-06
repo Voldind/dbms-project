@@ -26,13 +26,13 @@ class Stack {
     // чтение верхнего элемента
     T& top() {
         if (empty()) {
-            throw std::underflow_error("Стек пустой. Удаление невозможно");
+            throw std::underflow_error("Стек пустой. Чтение невозможно");
         }
         return m_list[0];
     }
     const T& top() const {
         if (empty()) {
-            throw std::underflow_error("Стек пустой. Удаление невозможно");
+            throw std::underflow_error("Стек пустой. Чтение невозможно");
         }
         return m_list[0];
     }
