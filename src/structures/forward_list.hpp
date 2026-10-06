@@ -23,6 +23,15 @@ class ForwardList {
     inline static const std::string ERROR_OUT_OF_BOUNDS =
         "индекс выходит за пределы списка";
 
+    // вспомогательный метод для поиска узла
+    Node* getNode(size_t index) const {
+        Node* current = m_head;
+        for (size_t i = 0; i < index; ++i) {
+            current = current->pNext;
+        }
+        return current;
+    }
+
    public:
     // конструктор
     ForwardList() : m_head(nullptr), m_tail(nullptr), m_size(0) {}
@@ -71,21 +80,13 @@ class ForwardList {
         if (index >= m_size) {
             throw std::out_of_range(ERROR_OUT_OF_BOUNDS);
         }
-        Node* current = m_head;
-        for (size_t i = 0; i < index; ++i) {
-            current = current->pNext;
-        }
-        return current->data;
+        return getNode(index)->data;
     }
     const T& operator[](size_t index) const {
         if (index >= m_size) {
             throw std::out_of_range(ERROR_OUT_OF_BOUNDS);
         }
-        Node* current = m_head;
-        for (size_t i = 0; i < index; ++i) {
-            current = current->pNext;
-        }
-        return current->data;
+        return getNode(index)->data;
     }
 
     // добавление элемента в голову
@@ -121,10 +122,8 @@ class ForwardList {
             push_back(value);
             return;
         }
-        Node* current = m_head;
-        for (size_t i = 0; i < index; ++i) {
-            current = current->pNext;
-        }
+
+        Node* current = getNode(index);
         Node* newNode = new Node(value, current->pNext);
         current->pNext = newNode;
 
@@ -138,16 +137,14 @@ class ForwardList {
         }
         if (index == 0) {
             push_front(value);
+            return;
         }
         if (index == m_size) {
             push_back(value);
             return;
         }
-        Node* previous = m_head;
-        for (size_t i = 0; i < index - 1; ++i) {
-            previous = previous->pNext;
-        }
 
+        Node* previous = getNode(index - 1);
         Node* newNode = new Node(value, previous->pNext);
         previous->pNext = newNode;
 
@@ -164,13 +161,14 @@ class ForwardList {
 
         m_size--;
 
-        if (m_head == nullptr) m_tail = nullptr;
+        if (m_head == nullptr) {
+            m_tail = nullptr;
+        }
     }
 
     // удаление элемента из хвоста
     void pop_back() {
         if (empty()) return;
-
         if (m_head == m_tail) {
             delete m_head;
             m_head = m_tail = nullptr;
@@ -178,10 +176,7 @@ class ForwardList {
             return;
         }
 
-        Node* previous = m_head;
-        while (previous->pNext != m_tail) {
-            previous = previous->pNext;
-        }
+        Node* previous = getNode(m_size - 2);
 
         delete m_tail;
         m_tail = previous;
@@ -195,15 +190,11 @@ class ForwardList {
         if (index >= m_size) {
             throw std::out_of_range(ERROR_OUT_OF_BOUNDS);
         }
-
         if (index == m_size - 1) {
             throw std::out_of_range("после данного индекса нет элементов");
         }
 
-        Node* current = m_head;
-        for (size_t i = 0; i < index; ++i) {
-            current = current->pNext;
-        }
+        Node* current = getNode(index);
 
         Node* toDelete = current->pNext;
         current->pNext = toDelete->pNext;
@@ -221,20 +212,15 @@ class ForwardList {
         if (index >= m_size) {
             throw std::out_of_range(ERROR_OUT_OF_BOUNDS);
         }
-
         if (index == 0) {
             throw std::out_of_range("перед данным индексом нет элементов");
         }
-
         if (index == 1) {
             pop_front();
             return;
         }
 
-        Node* previous = m_head;
-        for (size_t i = 0; i < index - 2; ++i) {
-            previous = previous->pNext;
-        }
+        Node* previous = getNode(index - 2);
 
         Node* toDelete = previous->pNext;
         previous->pNext = toDelete->pNext;
@@ -243,7 +229,7 @@ class ForwardList {
         m_size--;
     }
 
-    // Поиск элемента по значению. 
+    // Поиск элемента по значению.
     // Возвращает индекс первого совпадения, либо `-1`
     // если элемент не найден
     size_t find(const T& value) const {
@@ -261,6 +247,7 @@ class ForwardList {
     }
 
     // удаление элемента по значению
+    // возвращает успешность операции true либо false
     bool remove_by_value(const T& value) {
         size_t index = find(value);
 
