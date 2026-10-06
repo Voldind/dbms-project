@@ -156,4 +156,129 @@ class DoublyList {
 
         m_size++;
     }
+
+    // удаление элемента из головы
+    void pop_front() {
+        if (empty()) return;
+
+        Node* temp = m_head;
+        m_head = m_head->pNext;
+
+        if (m_head == nullptr) {
+            m_tail = nullptr;
+        } else {
+            m_head->pPrev = nullptr;
+        }
+
+        delete temp;
+        m_size--;
+    }
+
+    // удаление элемента из хвоста
+    void pop_back() {
+        if (empty()) return;
+
+        if (m_head == m_tail) {
+            delete m_head;
+            m_head = m_tail = nullptr;
+            m_size = 0;
+            return;
+        }
+
+        Node* temp = m_tail;
+        m_tail = m_tail->pPrev;
+        m_tail->pNext = nullptr;
+
+        delete temp;
+        m_size--;
+    }
+
+    // удаление после заданного индекса
+    void remove_after(size_t index) {
+        if (index >= m_size) {
+            throw std::out_of_range(ERROR_OUT_OF_BOUNDS);
+        }
+        if (index == m_size - 1) {
+            throw std::out_of_range("после данного индекса нет элементов");
+        }
+
+        Node* current = getNode(index);
+        Node* toDelete = current->pNext;
+        current->pNext = toDelete->pNext;
+        if (toDelete == m_tail) {
+            m_tail = current;
+        } else {
+            toDelete->pNext->pPrev = current;
+        }
+
+        delete toDelete;
+        m_size--;
+    }
+
+    // удаление после заданного индекса
+    void remove_before(size_t index) {
+        if (index >= m_size) {
+            throw std::out_of_range(ERROR_OUT_OF_BOUNDS);
+        }
+        if (index == m_size - 1) {
+            throw std::out_of_range("перед данным индексом нет элементов");
+        }
+
+        if (index == 1) {
+            pop_front();
+            return;
+        }
+
+        Node* current = getNode(index);
+        Node* toDelete = current->pPrev;
+        toDelete->pPrev->pNext = current;
+        current->pPrev = toDelete->pPrev;
+
+        delete toDelete;
+        m_size--;
+    }
+
+    // Поиск элемента по значению.
+    // Возвращает индекс первого совпадения, либо `-1`
+    // если элемент не найден
+    size_t find(const T& value) const {
+        Node* current = m_head;
+        size_t index = 0;
+
+        while(current != nullptr) {
+            if (current->data == value) {
+                return index;
+            }
+            current = current->pNext;
+            index++;
+        }
+
+        return static_cast<size_t>(-1);
+    }
+
+    // удаление элемента по значению
+    // возвращает успешность операции true либо false
+    bool remove_by_value(const T& value) {
+        size_t index = find(value);
+
+        if (index == static_cast<size_t>(-1)) {
+            return false;
+        }
+        if (index == 0) {
+            pop_front();
+            return true;
+        }
+        if (index == m_size - 1) {
+            pop_back();
+            return true;
+        }
+
+        Node* toDelete = getNode(index);
+        toDelete->pPrev->pNext = toDelete->pNext;
+        toDelete->pNext->pPrev = toDelete->pPrev;
+
+        delete toDelete;
+        m_size--;
+        return true;
+    }
 };
