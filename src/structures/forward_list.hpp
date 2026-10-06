@@ -21,7 +21,7 @@ class ForwardList {
 
     // константа для обработки ошибок
     inline static const std::string ERROR_OUT_OF_BOUNDS =
-        "индекс выходит за пределы массива";
+        "индекс выходит за пределы списка";
 
    public:
     // конструктор
