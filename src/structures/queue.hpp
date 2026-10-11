@@ -15,7 +15,7 @@ class Queue {
     // добавление элемента в конец
     void push(const T& value) { m_list.push_back(value); }
 
-    // чтение и удаление элемента с начала
+    // удаление элемента с начала
     void pop() {
         if (empty()) {
             throw std::underflow_error(
