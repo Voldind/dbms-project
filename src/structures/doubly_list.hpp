@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 template <typename T>
 class DoublyList {
@@ -20,11 +21,7 @@ class DoublyList {
     Node* m_tail;   // указатель на последний элемент
     size_t m_size;  // текущий размер списка
 
-    // константа для обработки ошибок
-    inline static const std::string ERROR_OUT_OF_BOUNDS =
-        "индекс выходит за пределы двусвязного списка";
-
-    // вспомогательный метод для поиска узла
+    inline static const std::string ERROR_OUT_OF_BOUNDS = "Index out of bounds";
     Node* getNode(size_t index) const {
         Node* current;
         if (index < m_size / 2) {
@@ -43,13 +40,9 @@ class DoublyList {
 
    public:
     DoublyList() : m_head(nullptr), m_tail(nullptr), m_size(0) {}
-
     ~DoublyList() { clear(); }
-
     size_t size() const { return m_size; }
     bool empty() const { return m_head == nullptr; }
-
-    // функция отчистки памяти
     void clear() {
         while (m_head != nullptr) {
             Node* temp = m_head;
@@ -59,8 +52,6 @@ class DoublyList {
         m_tail = nullptr;
         m_size = 0;
     }
-
-    // вывод списка на экран
     void print() const {
         if (empty()) {
             std::cout << "[]" << std::endl;
@@ -75,8 +66,6 @@ class DoublyList {
         }
         std::cout << "]" << std::endl;
     }
-
-    // перегрузка оператора `[]`
     T& operator[](size_t index) {
         if (index >= m_size) {
             throw std::out_of_range(ERROR_OUT_OF_BOUNDS);
@@ -89,8 +78,6 @@ class DoublyList {
         }
         return getNode(index)->data;
     }
-
-    // добавление элемента в голову
     void push_front(const T& value) {
         Node* newNode = new Node(value, m_head, nullptr);
 
@@ -102,8 +89,6 @@ class DoublyList {
         }
         m_size++;
     }
-
-    // добавление элемента в хвост
     void push_back(const T& value) {
         Node* newNode = new Node(value, nullptr, m_tail);
 
@@ -115,8 +100,6 @@ class DoublyList {
         }
         m_size++;
     }
-
-    // вставка элемента после заданного индекса
     void insert_after(size_t index, const T& value) {
         if (index >= m_size) {
             throw std::out_of_range(ERROR_OUT_OF_BOUNDS);
@@ -133,8 +116,6 @@ class DoublyList {
 
         m_size++;
     }
-
-    // вставка элемента перед заданным индексом
     void insert_before(size_t index, const T& value) {
         if (index > m_size) {
             throw std::out_of_range(ERROR_OUT_OF_BOUNDS);
@@ -156,8 +137,6 @@ class DoublyList {
 
         m_size++;
     }
-
-    // удаление элемента из головы
     void pop_front() {
         if (empty()) return;
 
@@ -173,8 +152,6 @@ class DoublyList {
         delete temp;
         m_size--;
     }
-
-    // удаление элемента из хвоста
     void pop_back() {
         if (empty()) return;
 
@@ -192,14 +169,12 @@ class DoublyList {
         delete temp;
         m_size--;
     }
-
-    // удаление после заданного индекса
     void remove_after(size_t index) {
         if (index >= m_size) {
             throw std::out_of_range(ERROR_OUT_OF_BOUNDS);
         }
         if (index == m_size - 1) {
-            throw std::out_of_range("после данного индекса нет элементов");
+            throw std::out_of_range("Delete index out of bounds");
         }
 
         Node* current = getNode(index);
@@ -214,14 +189,12 @@ class DoublyList {
         delete toDelete;
         m_size--;
     }
-
-    // удаление после заданного индекса
     void remove_before(size_t index) {
         if (index >= m_size) {
             throw std::out_of_range(ERROR_OUT_OF_BOUNDS);
         }
         if (index == m_size - 1) {
-            throw std::out_of_range("перед данным индексом нет элементов");
+            throw std::out_of_range("Delete index out of bounds");
         }
 
         if (index == 1) {
@@ -237,7 +210,6 @@ class DoublyList {
         delete toDelete;
         m_size--;
     }
-
     // Поиск элемента по значению.
     // Возвращает индекс первого совпадения, либо `-1`
     // если элемент не найден
@@ -245,7 +217,7 @@ class DoublyList {
         Node* current = m_head;
         size_t index = 0;
 
-        while(current != nullptr) {
+        while (current != nullptr) {
             if (current->data == value) {
                 return index;
             }
@@ -255,7 +227,6 @@ class DoublyList {
 
         return static_cast<size_t>(-1);
     }
-
     // удаление элемента по значению
     // возвращает успешность операции true либо false
     bool remove_by_value(const T& value) {
@@ -280,5 +251,14 @@ class DoublyList {
         delete toDelete;
         m_size--;
         return true;
+    }
+    std::vector<T> to_vector() const {
+        std::vector<T> res;
+        Node* current = m_head;
+        while (current != nullptr) {
+            res.push_back(current->data);
+            current = current->pNext;
+        }
+        return res;
     }
 };

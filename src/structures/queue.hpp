@@ -1,5 +1,6 @@
 #pragma once
 #include <stdexcept>
+#include <vector>
 
 #include "forward_list.hpp"
 
@@ -9,41 +10,31 @@ class Queue {
     ForwardList<T> m_list;
 
    public:
-    // конструктор
     Queue() = default;
-
-    // добавление элемента в конец
+    ~Queue() { clear(); }
+    void clear() { m_list.clear(); }
     void push(const T& value) { m_list.push_back(value); }
-
-    // удаление элемента с начала
     void pop() {
         if (empty()) {
             throw std::underflow_error(
-                "Очередь пуста. Невозможно удалить элемент");
+                "Queue is empty! Cannot pop");
         }
         m_list.pop_front();
     }
-
-    // чтение первого элемента очереди
     T& front() {
         if (empty()) {
-            throw std::underflow_error("Очередь пуста. Невозможно прочитать");
+            throw std::underflow_error("Queue is empty! Cannot read front");
         }
         return m_list[0];
     }
     const T& front() const {
         if (empty()) {
-            throw std::underflow_error("Очередь пуста. Невозможно прочитать");
+            throw std::underflow_error("Queue is empty! Cannot read front");
         }
         return m_list[0];
     }
-
-    // проверка на пустоту
     bool empty() const { return m_list.empty(); }
-
-    // получение длины очереди
     size_t size() const { return m_list.size(); }
-
-    // вывод очереди на экран
     void print() const { m_list.print(); }
+    std::vector<T> to_vector() const { return m_list.to_vector(); }
 };

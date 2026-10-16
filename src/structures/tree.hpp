@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include "queue.hpp"
 
@@ -36,7 +37,7 @@ class CompleteBinaryTree {
         preOrder(node->right);
     }
     void inOrder(Node* node) const {
-        if(node == nullptr) return;
+        if (node == nullptr) return;
         inOrder(node->left);
         std::cout << node->data << " ";
         inOrder(node->right);
@@ -47,12 +48,11 @@ class CompleteBinaryTree {
         postOrder(node->right);
         std::cout << node->data << " ";
     }
+
    public:
     CompleteBinaryTree() : m_root(nullptr) {}
     ~CompleteBinaryTree() { clear(m_root); }
-    bool find(const T& value) const {
-        return find(m_root, value);
-    }
+    bool find(const T& value) const { return find(m_root, value); }
     void clear() {
         clear(m_root);
         m_root = nullptr;
@@ -70,14 +70,14 @@ class CompleteBinaryTree {
             Node* current = q.front();
             q.pop();
 
-            if(current->left == nullptr) {
+            if (current->left == nullptr) {
                 current->left = new Node(value);
                 return;
             } else {
                 q.push(current->left);
             }
 
-            if(current->right == nullptr) {
+            if (current->right == nullptr) {
                 current->right = new Node(value);
                 return;
             } else {
@@ -97,7 +97,6 @@ class CompleteBinaryTree {
         postOrder(m_root);
         std::cout << std::endl;
     }
-    // вывод обходом в ширину
     void print() const {
         if (m_root == nullptr) {
             std::cout << "[]" << std::endl;
@@ -106,7 +105,7 @@ class CompleteBinaryTree {
         Queue<Node*> q;
         q.push(m_root);
         std::cout << "[ ";
-        while(!q.empty()) {
+        while (!q.empty()) {
             Node* current = q.front();
             q.pop();
 
@@ -125,14 +124,14 @@ class CompleteBinaryTree {
 
         bool flag_null_encountered = false;
 
-        while(!q.empty()) {
+        while (!q.empty()) {
             Node* current = q.front();
             q.pop();
 
             if (current == nullptr) {
                 flag_null_encountered = true;
             } else {
-                if(flag_null_encountered) {
+                if (flag_null_encountered) {
                     return false;
                 }
                 q.push(current->left);
@@ -140,5 +139,20 @@ class CompleteBinaryTree {
             }
         }
         return true;
+    }
+    std::vector<T> to_vector() const {
+        std::vector<T> res;
+        if (m_root == nullptr) return res;
+
+        Queue<Node*> q;
+        q.push(m_root);
+        while (!q.empty()) {
+            Node* current = q.front();
+            q.pop();
+            res.push_back(current->data);
+            if (current->left) q.push(current->left);
+            if (current->right) q.push(current->right);
+        }
+        return res;
     }
 };

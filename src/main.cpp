@@ -1,7 +1,9 @@
-#include "parser/query_parser.hpp"
-#include "storage/database.hpp"
 #include <iostream>
 #include <string>
+
+#include "parser/query_parser.hpp"
+#include "storage/database.hpp"
+#include "storage/file_manager.hpp"
 
 int main(int argc, char* argv[]) {
     if (argc < 5) {
@@ -24,10 +26,9 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     Database db;
-    // TODO: вызов загрузки данных из файла
+    FileManager::loadFromFile(file_path, db);
     Query parsed_query = QueryParser::parse(query_str);
     db.executeQuery(parsed_query);
-    // TODO: вызов сохранения данных в файл
-    // db.saveToFile(file_path);
+    FileManager::saveToFile(file_path, db);
     return 0;
 }

@@ -1,0 +1,21 @@
+{
+    "arrays": {},
+    "doubly_lists": {},
+    "forward_lists": {},
+    "queues": {
+        "myqueue": [
+            "Человек"
+        ]
+    },
+    "stacks": {
+        "mystack": [
+            "Книга"
+        ]
+    },
+    "trees": {
+        "mytree": [
+            "Директор",
+            "Зам"
+        ]
+    }
+}
