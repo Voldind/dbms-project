@@ -20,16 +20,20 @@ func NewDynamicArray[T any](initialCapacity int) *DynamicArray[T] {
 		capacity: initialCapacity,
 	}
 }
+
 func (da *DynamicArray[T]) Size() int {
 	return da.size
 }
+
 func (da *DynamicArray[T]) Capacity() int {
 	return da.capacity
 }
+
 func (da *DynamicArray[T]) Clear() {
 	da.data = make([]T, da.capacity)
 	da.size = 0
 }
+
 func (da *DynamicArray[T]) resize(newCapacity int) {
 	newData := make([]T, newCapacity)
 	for i := 0; i < da.size; i++ {
@@ -38,6 +42,7 @@ func (da *DynamicArray[T]) resize(newCapacity int) {
 	da.data = newData
 	da.capacity = newCapacity
 }
+
 func (da *DynamicArray[T]) PushBack(value T) {
 	if da.size == da.capacity {
 		da.resize(da.capacity * 2)
@@ -45,6 +50,7 @@ func (da *DynamicArray[T]) PushBack(value T) {
 	da.data[da.size] = value
 	da.size++
 }
+
 func (da *DynamicArray[T]) InsertAt(index int, value T) error {
 	if index < 0 || index >= da.size {
 		return fmt.Errorf("array: failed to insert element at %d (size %d): %w", index, da.size, ErrOutOfBounds)
@@ -58,6 +64,7 @@ func (da *DynamicArray[T]) InsertAt(index int, value T) error {
 	da.data[index] = value
 	return nil
 }
+
 func (da *DynamicArray[T]) Get(index int) (T, error) {
 	var result T
 	if index < 0 || index >= da.size {
@@ -65,6 +72,7 @@ func (da *DynamicArray[T]) Get(index int) (T, error) {
 	}
 	return da.data[index], nil
 }
+
 func (da *DynamicArray[T]) Set(index int, value T) error {
 	if index < 0 || index >= da.size {
 		return fmt.Errorf("array: failed to set element at %d (size %d): %w", index, da.size, ErrOutOfBounds)
@@ -72,6 +80,7 @@ func (da *DynamicArray[T]) Set(index int, value T) error {
 	da.data[index] = value
 	return nil
 }
+
 func (da *DynamicArray[T]) Remove(index int) error {
 	if index < 0 || index >= da.size {
 		return fmt.Errorf("array: failed to remove element at %d (size %d): %w", index, da.size, ErrOutOfBounds)
@@ -82,6 +91,7 @@ func (da *DynamicArray[T]) Remove(index int) error {
 	da.size--
 	return nil
 }
+
 func (da *DynamicArray[T]) Print() {
 	fmt.Print("[")
 	for i := 0; i < da.size; i++ {
