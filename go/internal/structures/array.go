@@ -1,13 +1,7 @@
 package structures
 
 import (
-	"errors"
 	"fmt"
-)
-
-var (
-	ErrOutOfBounds = errors.New("index out of boudns")
-	ErrNotFound    = errors.New("value not found")
 )
 
 type DynamicArray[T any] struct {
@@ -53,7 +47,7 @@ func (da *DynamicArray[T]) PushBack(value T) {
 }
 func (da *DynamicArray[T]) InsertAt(index int, value T) error {
 	if index < 0 || index >= da.size {
-		return ErrOutOfBounds
+		return fmt.Errorf("array: failed to insert element at %d (size %d): %w", index, da.size, ErrOutOfBounds)
 	}
 	if da.size == da.capacity {
 		da.resize(da.capacity * 2)
@@ -67,20 +61,20 @@ func (da *DynamicArray[T]) InsertAt(index int, value T) error {
 func (da *DynamicArray[T]) Get(index int) (T, error) {
 	var result T
 	if index < 0 || index >= da.size {
-		return result, ErrOutOfBounds
+		return result, fmt.Errorf("array: failed to get element at %d (size %d): %w", index, da.size, ErrOutOfBounds)
 	}
 	return da.data[index], nil
 }
 func (da *DynamicArray[T]) Set(index int, value T) error {
 	if index < 0 || index >= da.size {
-		return ErrOutOfBounds
+		return fmt.Errorf("array: failed to set element at %d (size %d): %w", index, da.size, ErrOutOfBounds)
 	}
 	da.data[index] = value
 	return nil
 }
 func (da *DynamicArray[T]) Remove(index int) error {
 	if index < 0 || index >= da.size {
-		return ErrOutOfBounds
+		return fmt.Errorf("array: failed to remove element at %d (size %d): %w", index, da.size, ErrOutOfBounds)
 	}
 	for i := index; i < da.size-1; i++ {
 		da.data[i] = da.data[i+1]
@@ -92,7 +86,7 @@ func (da *DynamicArray[T]) Print() {
 	fmt.Print("[")
 	for i := 0; i < da.size; i++ {
 		fmt.Print(da.data[i])
-		if i < da.size - 1 {
+		if i < da.size-1 {
 			fmt.Print(", ")
 		}
 	}
