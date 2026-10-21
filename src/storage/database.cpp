@@ -97,7 +97,7 @@ void Database::executeQuery(const Query& q) {
                       << std::endl;
             break;
         // ==========================================
-        // --- 2. ОДНОСВЯЗНЫЙ СПИСОК (L) ---
+        // --- 2. ОДНОСВЯЗНЫЙ СПИСОК (F) ---
         // ==========================================
         case CommandType::FPUSHHEAD:
             m_forward_lists[q.db_name].push_front(q.value);
@@ -109,11 +109,11 @@ void Database::executeQuery(const Query& q) {
             std::cout << "-> OK" << std::endl;
             break;
 
-        case CommandType::FADD:  // Вставка ПОСЛЕ индекса (или в конец, если
-                                 // индекс не указан)
-            if (q.has_index) {
+        case CommandType::FADD:
+            if (!q.target_value.empty()) {
                 try {
-                    m_forward_lists[q.db_name].insert_after(q.index, q.value);
+                    m_forward_lists[q.db_name].insert_after(q.target_value,
+                                                            q.value);
                     std::cout << "-> OK" << std::endl;
                 } catch (const std::exception& e) {
                     std::cout << "-> Error: " << e.what() << std::endl;
@@ -124,14 +124,16 @@ void Database::executeQuery(const Query& q) {
             }
             break;
 
-        case CommandType::FADDBEFORE:  // Вставка ДО индекса
-            if (!q.has_index) {
-                std::cout << "-> Error: FADDBEFORE requires an index!"
-                          << std::endl;
+        case CommandType::FADDBEFORE:
+            if (q.target_value.empty()) {
+                std::cout
+                    << "-> Error: FADDBEFORE requires target_value and value!"
+                    << std::endl;
                 break;
             }
             try {
-                m_forward_lists[q.db_name].insert_before(q.index, q.value);
+                m_forward_lists[q.db_name].insert_before(q.target_value,
+                                                         q.value);
                 std::cout << "-> OK" << std::endl;
             } catch (const std::exception& e) {
                 std::cout << "-> Error: " << e.what() << std::endl;
@@ -160,10 +162,10 @@ void Database::executeQuery(const Query& q) {
             std::cout << "-> OK" << std::endl;
             break;
 
-        case CommandType::FDEL:  // Удаление ПОСЛЕ индекса
-            if (!q.has_index) {
-                std::cout << "-> Error: FDEL requires an index of the node "
-                             "AFTER which to delete!"
+        case CommandType::FDEL:
+            if (q.target_value.empty()) {
+                std::cout << "-> Error: FDEL requires target value after which "
+                             "to delete!"
                           << std::endl;
                 break;
             }
@@ -172,16 +174,17 @@ void Database::executeQuery(const Query& q) {
                 break;
             }
             try {
-                m_forward_lists[q.db_name].remove_after(q.index);
+                m_forward_lists[q.db_name].remove_after(q.target_value);
                 std::cout << "-> OK" << std::endl;
             } catch (const std::exception& e) {
                 std::cout << "-> Error: " << e.what() << std::endl;
             }
             break;
 
-        case CommandType::FDELBEFORE:  // Удаление ДО индекса
-            if (!q.has_index) {
-                std::cout << "-> Error: FDELBEFORE requires an index!"
+        case CommandType::FDELBEFORE:
+            if (q.target_value.empty()) {
+                std::cout << "-> Error: FDELBEFORE requires target value "
+                             "before which to delete!"
                           << std::endl;
                 break;
             }
@@ -190,7 +193,7 @@ void Database::executeQuery(const Query& q) {
                 break;
             }
             try {
-                m_forward_lists[q.db_name].remove_before(q.index);
+                m_forward_lists[q.db_name].remove_before(q.target_value);
                 std::cout << "-> OK" << std::endl;
             } catch (const std::exception& e) {
                 std::cout << "-> Error: " << e.what() << std::endl;
@@ -269,9 +272,10 @@ void Database::executeQuery(const Query& q) {
             break;
 
         case CommandType::LADD:
-            if (q.has_index) {
+            if (!q.target_value.empty()) {
                 try {
-                    m_doubly_lists[q.db_name].insert_after(q.index, q.value);
+                    m_doubly_lists[q.db_name].insert_after(q.target_value,
+                                                           q.value);
                     std::cout << "-> OK" << std::endl;
                 } catch (const std::exception& e) {
                     std::cout << "-> Error: " << e.what() << std::endl;
@@ -283,13 +287,15 @@ void Database::executeQuery(const Query& q) {
             break;
 
         case CommandType::LADDBEFORE:
-            if (!q.has_index) {
-                std::cout << "-> Error: LADDBEFORE requires an index!"
-                          << std::endl;
+            if (q.target_value.empty()) {
+                std::cout
+                    << "-> Error: LADDBEFORE requires target_value and value!"
+                    << std::endl;
                 break;
             }
             try {
-                m_doubly_lists[q.db_name].insert_before(q.index, q.value);
+                m_doubly_lists[q.db_name].insert_before(q.target_value,
+                                                        q.value);
                 std::cout << "-> OK" << std::endl;
             } catch (const std::exception& e) {
                 std::cout << "-> Error: " << e.what() << std::endl;
@@ -317,12 +323,13 @@ void Database::executeQuery(const Query& q) {
             break;
 
         case CommandType::LDEL:
-            if (!q.has_index) {
-                std::cout << "-> Error: LDEL requires an index!" << std::endl;
+            if (q.target_value.empty()) {
+                std::cout << "-> Error: LDEL requires target value!"
+                          << std::endl;
                 break;
             }
             try {
-                m_doubly_lists[q.db_name].remove_after(q.index);
+                m_doubly_lists[q.db_name].remove_after(q.target_value);
                 std::cout << "-> OK" << std::endl;
             } catch (const std::exception& e) {
                 std::cout << "-> Error: " << e.what() << std::endl;
@@ -330,13 +337,13 @@ void Database::executeQuery(const Query& q) {
             break;
 
         case CommandType::LDELBEFORE:
-            if (!q.has_index) {
-                std::cout << "-> Error: LDELBEFORE requires an index!"
+            if (q.target_value.empty()) {
+                std::cout << "-> Error: LDELBEFORE requires target value!"
                           << std::endl;
                 break;
             }
             try {
-                m_doubly_lists[q.db_name].remove_before(q.index);
+                m_doubly_lists[q.db_name].remove_before(q.target_value);
                 std::cout << "-> OK" << std::endl;
             } catch (const std::exception& e) {
                 std::cout << "-> Error: " << e.what() << std::endl;
@@ -540,70 +547,141 @@ void Database::printAll() {
 }
 
 void Database::printHelp() {
-    std::cout << "\n=========================================================================" << std::endl;
-    std::cout << "                      СУБД CLI — СПРАВКА ПО КОМАНДАМ                      " << std::endl;
-    std::cout << "=========================================================================" << std::endl;
-    
+    std::cout << "\n==========================================================="
+                 "=============="
+              << std::endl;
+    std::cout << "                      СУБД CLI — СПРАВКА ПО КОМАНДАМ         "
+                 "             "
+              << std::endl;
+    std::cout << "============================================================="
+                 "============"
+              << std::endl;
+
     std::cout << "\n[ОБЩИЕ КОМАНДЫ]:" << std::endl;
     std::cout << "  HELP / --help        - Вывести эту справку" << std::endl;
-    std::cout << "  PRINT                - Распечатать текущее состояние всех контейнеров в БД" << std::endl;
+    std::cout << "  PRINT                - Распечатать текущее состояние всех "
+                 "контейнеров в БД"
+              << std::endl;
 
     std::cout << "\n[МАССИВ (Префикс M)]:" << std::endl;
-    std::cout << "  MPUSH <name> <val>   - Добавить элемент в конец массива" << std::endl;
-    std::cout << "  MPUSH <name> <idx> <val> - Вставить элемент по индексу" << std::endl;
-    std::cout << "  MGET  <name> <idx>   - Получить элемент по индексу" << std::endl;
-    std::cout << "  MSET  <name> <idx> <val> - Заменить элемент по индексу" << std::endl;
-    std::cout << "  MDEL  <name> <idx>   - Удалить элемент по индексу" << std::endl;
-    std::cout << "  MSIZE <name>         - Узнать текущий размер массива" << std::endl;
-    std::cout << "  MCLEAR <name>        - Полностью очистить и удалить массив" << std::endl;
+    std::cout << "  MPUSH <name> <val>   - Добавить элемент в конец массива"
+              << std::endl;
+    std::cout << "  MPUSH <name> <idx> <val> - Вставить элемент по индексу"
+              << std::endl;
+    std::cout << "  MGET  <name> <idx>   - Получить элемент по индексу"
+              << std::endl;
+    std::cout << "  MSET  <name> <idx> <val> - Заменить элемент по индексу"
+              << std::endl;
+    std::cout << "  MDEL  <name> <idx>   - Удалить элемент по индексу"
+              << std::endl;
+    std::cout << "  MSIZE <name>         - Узнать текущий размер массива"
+              << std::endl;
+    std::cout << "  MCLEAR <name>        - Полностью очистить и удалить массив"
+              << std::endl;
 
     std::cout << "\n[ОДНОСВЯЗНЫЙ СПИСОК (Префикс F)]:" << std::endl;
-    std::cout << "  FPUSHHEAD <name> <val>   - Добавить элемент в начало списка" << std::endl;
-    std::cout << "  FPUSHTAIL <name> <val>   - Добавить элемент в конец списка" << std::endl;
-    std::cout << "  FADD      <name> <idx> <val> - Вставить элемент ПОСЛЕ указанного индекса" << std::endl;
-    std::cout << "  FADDBEFORE <name> <idx> <val> - Вставить элемент ДО указанного индекса" << std::endl;
-    std::cout << "  FDELHEAD  <name>         - Удалить элемент из начала списка" << std::endl;
-    std::cout << "  FDELTAIL   <name>        - Удалить элемент из конца списка" << std::endl;
-    std::cout << "  FDEL      <name> <idx>   - Удалить элемент ПОСЛЕ указанного индекса" << std::endl;
-    std::cout << "  FDELBEFORE <name> <idx>  - Удалить элемент ДО указанного index" << std::endl;
-    std::cout << "  FFIND     <name> <val>   - Найти индекс элемента по значению" << std::endl;
-    std::cout << "  FVALDEL   <name> <val>   - Удалить первое вхождение по значению" << std::endl;
-    std::cout << "  FGET      <name> <idx>   - Получить элемент по индексу" << std::endl;
-    std::cout << "  FSIZE     <name>         - Получить размер списка" << std::endl;
-    std::cout << "  FCLEAR    <name>         - Очистить и удалить список" << std::endl;
+    std::cout << "  FPUSHHEAD <name> <val>   - Добавить элемент в начало списка"
+              << std::endl;
+    std::cout << "  FPUSHTAIL <name> <val>   - Добавить элемент в конец списка"
+              << std::endl;
+    std::cout << "  FADD      <name> <idx> <val> - Вставить элемент ПОСЛЕ "
+                 "указанного индекса"
+              << std::endl;
+    std::cout << "  FADDBEFORE <name> <idx> <val> - Вставить элемент ДО "
+                 "указанного индекса"
+              << std::endl;
+    std::cout << "  FDELHEAD  <name>         - Удалить элемент из начала списка"
+              << std::endl;
+    std::cout << "  FDELTAIL   <name>        - Удалить элемент из конца списка"
+              << std::endl;
+    std::cout << "  FDEL      <name> <idx>   - Удалить элемент ПОСЛЕ "
+                 "указанного индекса"
+              << std::endl;
+    std::cout
+        << "  FDELBEFORE <name> <idx>  - Удалить элемент ДО указанного index"
+        << std::endl;
+    std::cout
+        << "  FFIND     <name> <val>   - Найти индекс элемента по значению"
+        << std::endl;
+    std::cout
+        << "  FVALDEL   <name> <val>   - Удалить первое вхождение по значению"
+        << std::endl;
+    std::cout << "  FGET      <name> <idx>   - Получить элемент по индексу"
+              << std::endl;
+    std::cout << "  FSIZE     <name>         - Получить размер списка"
+              << std::endl;
+    std::cout << "  FCLEAR    <name>         - Очистить и удалить список"
+              << std::endl;
 
     std::cout << "\n[ДВУСВЯЗНЫЙ СПИСОК (Префикс L)]:" << std::endl;
-    std::cout << "  LPUSHHEAD <name> <val>   - Добавить элемент в начало списка" << std::endl;
-    std::cout << "  LPUSHTAIL <name> <val>   - Добавить элемент в конец списка" << std::endl;
-    std::cout << "  LADD      <name> <idx> <val> - Вставить элемент ПОСЛЕ указанного индекса" << std::endl;
-    std::cout << "  LADDBEFORE <name> <idx> <val> - Вставить элемент ДО указанного индекса" << std::endl;
-    std::cout << "  LDELHEAD  <name>         - Удалить элемент из начала списка" << std::endl;
-    std::cout << "  LDELTAIL   <name>        - Удалить элемент из конца списка" << std::endl;
-    std::cout << "  LDEL      <name> <idx>   - Удалить элемент ПОСЛЕ указанного индекса" << std::endl;
-    std::cout << "  LDELBEFORE <name> <idx>  - Удалить элемент ДО указанного index" << std::endl;
-    std::cout << "  LFIND     <name> <val>   - Найти индекс элемента по значению" << std::endl;
-    std::cout << "  LVALDEL   <name> <val>   - Удалить первое вхождение по значению" << std::endl;
-    std::cout << "  LGET      <name> <idx>   - Получить элемент по индексу" << std::endl;
-    std::cout << "  LSIZE     <name>         - Получить размер списка" << std::endl;
-    std::cout << "  LCLEAR    <name>         - Очистить и удалить список" << std::endl;
+    std::cout << "  LPUSHHEAD <name> <val>   - Добавить элемент в начало списка"
+              << std::endl;
+    std::cout << "  LPUSHTAIL <name> <val>   - Добавить элемент в конец списка"
+              << std::endl;
+    std::cout << "  LADD      <name> <idx> <val> - Вставить элемент ПОСЛЕ "
+                 "указанного индекса"
+              << std::endl;
+    std::cout << "  LADDBEFORE <name> <idx> <val> - Вставить элемент ДО "
+                 "указанного индекса"
+              << std::endl;
+    std::cout << "  LDELHEAD  <name>         - Удалить элемент из начала списка"
+              << std::endl;
+    std::cout << "  LDELTAIL   <name>        - Удалить элемент из конца списка"
+              << std::endl;
+    std::cout << "  LDEL      <name> <idx>   - Удалить элемент ПОСЛЕ "
+                 "указанного индекса"
+              << std::endl;
+    std::cout
+        << "  LDELBEFORE <name> <idx>  - Удалить элемент ДО указанного index"
+        << std::endl;
+    std::cout
+        << "  LFIND     <name> <val>   - Найти индекс элемента по значению"
+        << std::endl;
+    std::cout
+        << "  LVALDEL   <name> <val>   - Удалить первое вхождение по значению"
+        << std::endl;
+    std::cout << "  LGET      <name> <idx>   - Получить элемент по индексу"
+              << std::endl;
+    std::cout << "  LSIZE     <name>         - Получить размер списка"
+              << std::endl;
+    std::cout << "  LCLEAR    <name>         - Очистить и удалить список"
+              << std::endl;
 
     std::cout << "\n[СТЕК (Префикс S)]:" << std::endl;
-    std::cout << "  SPUSH  <name> <val>  - Поместить элемент на вершину стека" << std::endl;
-    std::cout << "  SPOP   <name>        - Извлечь и удалить элемент с вершины стека (LIFO)" << std::endl;
-    std::cout << "  SSIZE  <name>        - Получить текущий размер стека" << std::endl;
-    std::cout << "  SCLEAR <name>        - Полностью очистить стек" << std::endl;
+    std::cout << "  SPUSH  <name> <val>  - Поместить элемент на вершину стека"
+              << std::endl;
+    std::cout << "  SPOP   <name>        - Извлечь и удалить элемент с вершины "
+                 "стека (LIFO)"
+              << std::endl;
+    std::cout << "  SSIZE  <name>        - Получить текущий размер стека"
+              << std::endl;
+    std::cout << "  SCLEAR <name>        - Полностью очистить стек"
+              << std::endl;
 
     std::cout << "\n[ОЧЕРЕДЬ (Префикс Q)]:" << std::endl;
-    std::cout << "  QPUSH  <name> <val>  - Добавить элемент в конец очереди" << std::endl;
-    std::cout << "  QPOP   <name>        - Извлечь и удалить элемент из начала очереди (FIFO)" << std::endl;
-    std::cout << "  QSIZE  <name>        - Получить текущий размер очереди" << std::endl;
-    std::cout << "  QCLEAR <name>        - Полностью очистить очередь" << std::endl;
+    std::cout << "  QPUSH  <name> <val>  - Добавить элемент в конец очереди"
+              << std::endl;
+    std::cout << "  QPOP   <name>        - Извлечь и удалить элемент из начала "
+                 "очереди (FIFO)"
+              << std::endl;
+    std::cout << "  QSIZE  <name>        - Получить текущий размер очереди"
+              << std::endl;
+    std::cout << "  QCLEAR <name>        - Полностью очистить очередь"
+              << std::endl;
 
     std::cout << "\n[ПОЛНОЕ БИНАРНОЕ ДЕРЕВО (Префикс T)]:" << std::endl;
-    std::cout << "  TINSERT <name> <val> - Вставить элемент в дерево (заполнение по уровням)" << std::endl;
-    std::cout << "  TFIND   <name> <val> - Проверить наличие элемента в дереве" << std::endl;
-    std::cout << "  TCHECK  <name>       - Честная проверка структуры на свойство Complete" << std::endl;
-    std::cout << "  TCLEAR  <name>       - Полностью очистить и удалить дерево" << std::endl;
-    
-    std::cout << "=========================================================================\n" << std::endl;
+    std::cout << "  TINSERT <name> <val> - Вставить элемент в дерево "
+                 "(заполнение по уровням)"
+              << std::endl;
+    std::cout << "  TFIND   <name> <val> - Проверить наличие элемента в дереве"
+              << std::endl;
+    std::cout << "  TCHECK  <name>       - Честная проверка структуры на "
+                 "свойство Complete"
+              << std::endl;
+    std::cout << "  TCLEAR  <name>       - Полностью очистить и удалить дерево"
+              << std::endl;
+
+    std::cout << "============================================================="
+                 "============\n"
+              << std::endl;
 }

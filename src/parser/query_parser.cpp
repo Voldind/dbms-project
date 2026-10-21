@@ -1,9 +1,7 @@
 #include "query_parser.hpp"
-
 #include <sstream>
 
 CommandType QueryParser::stringToCommand(const std::string& cmd) {
-    // --- Массив ---
     if (cmd == "MPUSH") return CommandType::MPUSH;
     if (cmd == "MDEL") return CommandType::MDEL;
     if (cmd == "MGET") return CommandType::MGET;
@@ -11,7 +9,6 @@ CommandType QueryParser::stringToCommand(const std::string& cmd) {
     if (cmd == "MSIZE") return CommandType::MSIZE;
     if (cmd == "MCLEAR") return CommandType::MCLEAR;
 
-    // --- Односвязный список ---
     if (cmd == "FPUSHHEAD") return CommandType::FPUSHHEAD;
     if (cmd == "FPUSHTAIL") return CommandType::FPUSHTAIL;
     if (cmd == "FADD") return CommandType::FADD;
@@ -26,7 +23,6 @@ CommandType QueryParser::stringToCommand(const std::string& cmd) {
     if (cmd == "FSIZE") return CommandType::FSIZE;
     if (cmd == "FCLEAR") return CommandType::FCLEAR;
 
-    // --- ДВУСВЯЗНЫЙ СПИСОК ---
     if (cmd == "LPUSHHEAD") return CommandType::LPUSHHEAD;
     if (cmd == "LPUSHTAIL") return CommandType::LPUSHTAIL;
     if (cmd == "LADD") return CommandType::LADD;
@@ -41,19 +37,16 @@ CommandType QueryParser::stringToCommand(const std::string& cmd) {
     if (cmd == "LSIZE") return CommandType::LSIZE;
     if (cmd == "LCLEAR") return CommandType::LCLEAR;
 
-    // --- СТЕК ---
     if (cmd == "SPUSH") return CommandType::SPUSH;
     if (cmd == "SPOP") return CommandType::SPOP;
     if (cmd == "SSIZE") return CommandType::SSIZE;
     if (cmd == "SCLEAR") return CommandType::SCLEAR;
 
-    // --- ОЧЕРЕДЬ ---
     if (cmd == "QPUSH") return CommandType::QPUSH;
     if (cmd == "QPOP") return CommandType::QPOP;
     if (cmd == "QSIZE") return CommandType::QSIZE;
     if (cmd == "QCLEAR") return CommandType::QCLEAR;
 
-    // --- ДЕРЕВО ---
     if (cmd == "TINSERT") return CommandType::TINSERT;
     if (cmd == "TFIND") return CommandType::TFIND;
     if (cmd == "TCHECK") return CommandType::TCHECK;
@@ -75,21 +68,34 @@ Query QueryParser::parse(const std::string& query_str) {
     q.command_raw = cmd_raw;
     q.command_type = stringToCommand(cmd_raw);
 
-    if (q.command_type == CommandType::PRINT) {
-        ss >> q.db_name;
-        return q;
-    }
-    if (q.command_type == CommandType::PRINT ||
-        q.command_type == CommandType::HELP) {
+    if (q.command_type == CommandType::PRINT || q.command_type == CommandType::HELP) {
         ss >> q.db_name;
         return q;
     }
 
     ss >> q.db_name;
-    std::string arg;
-    ss >> arg;
 
-    if (!arg.empty()) {
+    // Специфический парсинг для добавления/удаления до/после по значению:
+    if (q.command_type == CommandType::FADD || q.command_type == CommandType::FADDBEFORE ||
+        q.command_type == CommandType::LADD || q.command_type == CommandType::LADDBEFORE) {
+        ss >> q.target_value;
+        if (!(ss >> q.value)) {
+            // Если передан только 1 аргумент: добавляем его в конец, как push_back
+            q.value = q.target_value;
+            q.target_value.clear();
+        }
+        return q;
+    }
+
+    if (q.command_type == CommandType::FDEL || q.command_type == CommandType::FDELBEFORE ||
+        q.command_type == CommandType::LDEL || q.command_type == CommandType::LDELBEFORE) {
+        ss >> q.target_value;
+        return q;
+    }
+
+    // Для остальных команд (массивы, простые push/get)
+    std::string arg;
+    if (ss >> arg) {
         try {
             size_t pos;
             int val = std::stoi(arg, &pos);

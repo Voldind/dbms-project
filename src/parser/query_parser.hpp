@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 
-// все возможные команды
 enum class CommandType {
     // 1. МАССИВ (M)
     MPUSH,
@@ -69,6 +68,7 @@ struct Query {
     CommandType command_type = CommandType::UNKNOWN;
     std::string command_raw;
     std::string db_name;
+    std::string target_value; // целевое значение для операций списка ДО / ПОСЛЕ
     std::string value;
     size_t index = 0;
     bool has_index = false;
