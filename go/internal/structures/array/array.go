@@ -13,15 +13,12 @@ type DynamicArray[T any] struct {
 	capacity int
 }
 
-func NewDynamicArray[T any](initialCapacity int) *DynamicArray[T] {
-	if initialCapacity <= 0 {
-		initialCapacity = 2
-	}
-	return &DynamicArray[T]{
-		data:     make([]T, initialCapacity),
-		size:     0,
-		capacity: initialCapacity,
-	}
+func NewArray[T any]() *DynamicArray[T] {
+	return &DynamicArray[T]{}
+}
+
+func (da *DynamicArray[T]) IsEmpty() bool {
+	return len(da.data) == 0
 }
 
 func (da *DynamicArray[T]) Size() int {
@@ -47,8 +44,13 @@ func (da *DynamicArray[T]) resize(newCapacity int) {
 }
 
 func (da *DynamicArray[T]) PushBack(value T) {
+	
 	if da.size == da.capacity {
-		da.resize(da.capacity * 2)
+		newCap := da.capacity * 2
+		if newCap == 0 {
+			newCap = 2
+		}
+		da.resize(newCap)
 	}
 	da.data[da.size] = value
 	da.size++
