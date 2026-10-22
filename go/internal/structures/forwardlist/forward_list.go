@@ -1,6 +1,15 @@
-package structures
+package forwardlist
 
-import "fmt"
+import (
+	"fmt"
+	"errors"
+)
+
+var (
+	ErrNotFound    = errors.New("value not found")
+	ErrEmpty       = errors.New("container is empty")
+	ErrNotExist    = errors.New("value not exist")
+)
 
 type Node[T comparable] struct {
 	Value T

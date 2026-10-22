@@ -1,8 +1,11 @@
-package structures
+package array
 
 import (
 	"fmt"
+	"errors"
 )
+
+var ErrOutOfBounds = errors.New("index out of boudns")
 
 type DynamicArray[T any] struct {
 	data     []T
