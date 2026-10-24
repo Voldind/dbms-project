@@ -7,7 +7,7 @@ import (
 
 var (
 	ErrNotFound    = errors.New("value not found")
-	ErrEmpty       = errors.New("container is empty")
+	ErrEmpty       = errors.New("list is empty")
 	ErrNotExist    = errors.New("value not exist")
 )
 
