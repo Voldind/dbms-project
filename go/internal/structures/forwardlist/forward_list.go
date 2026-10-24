@@ -9,6 +9,7 @@ var (
 	ErrNotFound    = errors.New("value not found")
 	ErrEmpty       = errors.New("list is empty")
 	ErrNotExist    = errors.New("value not exist")
+	ErrOutOfBounds = errors.New("index out of boudns")
 )
 
 type Node[T any] struct {
@@ -70,6 +71,9 @@ func (fl *ForwardList[T]) getNode(target T) (*Node[T], error) {
 func (fl *ForwardList[T]) getPrevNode(target T) (*Node[T], error) {
 	if fl.IsEmpty() {
 		return nil, ErrEmpty
+	}
+	if fl.head.Value == target {
+		return nil, ErrNotExist
 	}
 	prev := fl.head
 	for prev.Next != nil {
@@ -237,4 +241,45 @@ func (fl *ForwardList[T]) Remove(target T) error {
 	}
 	fl.size--
 	return nil
+}
+
+func (fl *ForwardList[T]) Front() (T, error) {
+	var result T
+	if fl.IsEmpty() {
+		return result, fmt.Errorf("flist: failed to get element from front: %w", ErrEmpty)
+	}
+	return fl.head.Value, nil
+}
+
+// Возвращает последний элемент и ошибку если список пустой
+func (fl *ForwardList[T]) Back() (T, error) {
+	var result T
+	if fl.IsEmpty() {
+		return result, fmt.Errorf("flist: failed to get element from back: %w", ErrEmpty)
+	}
+	return fl.tail.Value, nil
+}
+
+func (fl *ForwardList[T]) ToSlice() []T {
+	slice := make([]T, fl.size)
+	current := fl.head
+	index := 0
+	for current != nil {
+		slice[index] = current.Value
+		current = current.Next
+		index++
+	}
+	return slice
+}
+
+func (fl *ForwardList[T]) Get(index int) (T, error) {
+	var result T
+	if index < 0 || index >= fl.size {
+		return result, fmt.Errorf("flist: failed to get element by index %v: %w", index, ErrOutOfBounds)
+	}
+	current := fl.head
+	for i := 0; i < index; i++ {
+		current = current.Next
+	}
+	return current.Value, nil
 }
