@@ -11,7 +11,7 @@ var (
 	ErrNotExist    = errors.New("value not exist")
 )
 
-type Node[T comparable] struct {
+type Node[T any] struct {
 	Value T
 	Next  *Node[T]
 }
