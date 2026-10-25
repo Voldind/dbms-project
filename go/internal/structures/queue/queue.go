@@ -49,3 +49,9 @@ func (q *Queue[T]) Front() (T, error) {
 	}
 	return q.data[0], nil
 }
+
+func (q *Queue[T]) ToSlice() []T {
+	result := make([]T, len(q.data))
+	copy(result, q.data)
+	return result
+}

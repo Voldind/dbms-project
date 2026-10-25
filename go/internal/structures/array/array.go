@@ -107,3 +107,9 @@ func (da *DynamicArray[T]) Print() {
 	}
 	fmt.Print("]")
 }
+
+func (da *DynamicArray[T]) ToSlice() []T {
+	result := make([]T, da.size)
+	copy(result, da.data[:da.size])
+	return result
+}
