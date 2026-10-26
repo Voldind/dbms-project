@@ -50,6 +50,10 @@ func (s *Stack[T]) Top() (T, error) {
 	return s.data[len(s.data)-1], nil
 }
 
+func (s *Stack[T]) Clear() {
+	s.data = []T{}
+}
+
 func (s *Stack[T]) ToSlice() []T {
 	result := make([]T, len(s.data))
 	copy(result, s.data)

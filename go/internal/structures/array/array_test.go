@@ -5,7 +5,7 @@ import (
 )
 
 func TestArray_PushAndGet(t *testing.T) {
-	arr := NewArray[string]()
+	arr := NewDynamicArray[string]()
 
 	if !arr.IsEmpty() {
 		t.Errorf("ожидался пустой массив")
@@ -31,7 +31,7 @@ func TestArray_PushAndGet(t *testing.T) {
 }
 
 func TestArray_SetAndRemove(t *testing.T) {
-	arr := NewArray[int]()
+	arr := NewDynamicArray[int]()
 	arr.PushBack(10)
 	arr.PushBack(20)
 	arr.PushBack(30) // [10, 20, 30]

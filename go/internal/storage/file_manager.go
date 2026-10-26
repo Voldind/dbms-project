@@ -64,7 +64,7 @@ func (db *Database) LoadFromFile() error {
 		return err
 	} 
 	for name, arr := range snapshot.Arrays {
-		db.arrays[name] = array.NewArray[string]()
+		db.arrays[name] = array.NewDynamicArray[string]()
 		for _, val := range arr {
 			db.arrays[name].PushBack(val)
 		}

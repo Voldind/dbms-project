@@ -13,7 +13,7 @@ type DynamicArray[T any] struct {
 	capacity int
 }
 
-func NewArray[T any]() *DynamicArray[T] {
+func NewDynamicArray[T any]() *DynamicArray[T] {
 	return &DynamicArray[T]{}
 }
 
